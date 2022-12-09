@@ -26,6 +26,11 @@ ul{
   text-align: center;
 }
 
+textarea, input{
+  background-color: #fff;
+  color: #000;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;

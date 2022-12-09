@@ -1,30 +1,66 @@
-import Head from "next/head";
-import EventList from "../components/events/EventList";
-import { getFeaturedEvents } from "../helpers/ApiUtil";
-import Head from "next/head";
+import React, { useRef, useState } from "react";
 
-export default function HomePage(props) {
+const HomePage = () => {
+  const [feedbackItems, setFeedbackItems] = useState([]);
+  const emailInputRef = useRef();
+  const feedbackInputRef = useRef();
+
+  const submitFormHandler = (e) => {
+    e.preventDefault();
+
+    const enteredEmail = emailInputRef.current.value;
+    const enteredFeedback = feedbackInputRef.current.value;
+
+    const reqBody = { email: enteredEmail, text: enteredFeedback };
+
+    fetch("/api/feedback", {
+      method: "POST",
+      body: JSON.stringify(reqBody),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((resp) => resp.json())
+      .then((data) => console.log(data));
+  };
+
+  const loadFeedbackHandler = () => {
+    fetch("/api/feedback")
+      .then((resp) => resp.json())
+      .then((data) => {
+        setFeedbackItems(data.feedback);
+      });
+  };
+
   return (
     <div>
-      <Head>
-        <title>NextJS Event</title>
-        <meta
-          name="description"
-          content="Find a lot of great events that allows you to envolve"
-        />
-      </Head>
-      <EventList items={props.events} />
+      <h1>The home page</h1>
+      <form onSubmit={submitFormHandler}>
+        <div>
+          <label htmlFor="email">Your Email Address</label>
+          <input type="email" id="email" ref={emailInputRef} />
+        </div>
+        <div>
+          <label htmlFor="feedback">Your feedback Address</label>
+          <textarea
+            name=""
+            id="feedback"
+            cols="30"
+            rows="10"
+            ref={feedbackInputRef}
+          ></textarea>
+        </div>
+        <button>Send Feedback</button>
+      </form>
+      <hr />
+      <button onClick={loadFeedbackHandler}>Load Feedback</button>
+      <ul>
+        {feedbackItems.map((items) => (
+          <li key={items.id}>{items.text}</li>
+        ))}
+      </ul>
     </div>
   );
-}
+};
 
-export async function getStaticProps() {
-  const featuredEvents = await getFeaturedEvents();
-
-  return {
-    props: {
-      events: featuredEvents,
-    },
-    revalidate: 1800,
-  };
-}
+export default HomePage;
