@@ -4,6 +4,7 @@ import styles from "./EventItem.module.css";
 import DateIcon from "../icons/date-icon";
 import AddressIcon from "../icons/address-icon";
 import ArrowrightIcon from "../icons/arrow-right-icon";
+import Image from "next/image";
 
 const EventItem = (props) => {
   const humanReadableDate = new Date(props.date).toLocaleDateString("en-NG", {
@@ -16,7 +17,7 @@ const EventItem = (props) => {
   const exploreLink = `/events/${props.id}`;
   return (
     <li className={styles.item}>
-      <img src={`/${props.image}`} alt={props.title} />
+      <Image src={`/${props.image}`} alt={props.title} width={250} height={160} />
       <div className={styles.content}>
         <div className={styles.summary}>
           <h2>{props.title}</h2>

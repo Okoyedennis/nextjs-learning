@@ -1,3 +1,4 @@
+import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import useSWR from "swr";
@@ -12,10 +13,6 @@ const FilteredEventPage = (props) => {
   const router = useRouter();
 
   const filteredData = router.query.slug;
-
-  // useSWR(
-  //   "https://nextjs-course-de522-default-rtdb.firebaseio.com/events.json"
-  // );
 
   const { data, error } = useSWR(
     "https://nextjs-course-de522-default-rtdb.firebaseio.com/events.json",
@@ -37,14 +34,43 @@ const FilteredEventPage = (props) => {
     }
   }, [data]);
 
-  if (!loadedEvents) return <p className="center">Loading...</p>;
 
-  const filteredYear = filteredData[0];
-  const filteredMonth = filteredData[1];
+  let pageHeadData = (
+    <Head>
+      <Head>
+        <title>Filtered Event</title>
+        <meta
+          name="description"
+          content={`A list of filtered events.`}
+        />
+      </Head>
+    </Head>
+  );
 
-  //the string URL to number
-  const numYear = +filteredYear;
+
+  if (!loadedEvents) return (
+    <>
+      {pageHeadData}
+      <p className="center">Loading...</p>
+    </>
+  ); 
+
+    const filteredYear = filteredData[0];
+    const filteredMonth = filteredData[1];
+
+    //the string URL to number
+    const numYear = +filteredYear;
   const numMonth = +filteredMonth;
+  
+   pageHeadData = (
+      <Head>
+        <title>Filtered Event</title>
+        <meta
+          name="description"
+          content={`All events from ${numMonth}/${numYear}`}
+        />
+      </Head>
+    );
 
   if (
     isNaN(numYear) ||
@@ -57,6 +83,8 @@ const FilteredEventPage = (props) => {
   ) {
     return (
       <>
+        {pageHeadData}
+
         <ErrorAlert>
           <p>Invalid filter. Please adjust your values!</p>
         </ErrorAlert>
@@ -79,6 +107,8 @@ const FilteredEventPage = (props) => {
   if (!filteredEvents || filteredEvents.length === 0) {
     return (
       <>
+        {pageHeadData}
+
         <ErrorAlert>
           <p>No events found for the chosen filter!</p>
         </ErrorAlert>
@@ -92,6 +122,8 @@ const FilteredEventPage = (props) => {
   const date = new Date(numYear, numMonth - 1);
   return (
     <div>
+      {pageHeadData}
+
       <ResultsTitle date={date} />
       <EventList items={filteredEvents} />
     </div>
