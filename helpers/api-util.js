@@ -4,16 +4,16 @@ export async function getAllEvents() {
   );
   const data = await response.json();
 
-  const event = [];
+  const events = [];
 
   for (const key in data) {
-    event.push({
+    events.push({
       id: key,
       ...data[key],
     });
   }
 
-  return event;
+  return events;
 }
 
 export async function getFeaturedEvents() {
@@ -23,7 +23,6 @@ export async function getFeaturedEvents() {
 
 export async function getEventById(id) {
   const allEvents = await getAllEvents();
-
   return allEvents.find((event) => event.id === id);
 }
 
@@ -34,7 +33,6 @@ export async function getFilteredEvents(dateFilter) {
 
   let filteredEvents = allEvents.filter((event) => {
     const eventDate = new Date(event.date);
-
     return (
       eventDate.getFullYear() === year && eventDate.getMonth() === month - 1
     );

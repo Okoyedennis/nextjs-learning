@@ -1,23 +1,26 @@
-import React from "react";
+import { Fragment } from "react";
+import Head from "next/head";
+
+import { getEventById, getFeaturedEvents } from "../../helpers/api-util";
 import EventSummary from "../../components/event-detail/event-summary";
 import EventLogistics from "../../components/event-detail/event-logistics";
 import EventContent from "../../components/event-detail/event-content";
-import { getFeaturedEvents, getEventById } from "../../helpers/ApiUtil";
-import Head from "next/head";
+import ErrorAlert from "../../components/ui/error-alert";
+import Comments from "../../components/input/comments";
 
-const EventDetailPage = (props) => {
+function EventDetailPage(props) {
   const event = props.selectedEvent;
 
   if (!event) {
     return (
-      <duv className="center">
+      <div className="center">
         <p>Loading...</p>
-      </duv>
+      </div>
     );
   }
 
   return (
-    <>
+    <Fragment>
       <Head>
         <title>{event.title}</title>
         <meta name="description" content={event.description} />
@@ -32,9 +35,10 @@ const EventDetailPage = (props) => {
       <EventContent>
         <p>{event.description}</p>
       </EventContent>
-    </>
+      <Comments eventId={event.id} />
+    </Fragment>
   );
-};
+}
 
 export async function getStaticProps(context) {
   const eventId = context.params.eventId;
@@ -52,12 +56,11 @@ export async function getStaticProps(context) {
 export async function getStaticPaths() {
   const events = await getFeaturedEvents();
 
-  //TO CONSTRUCT THE PATH FOR NEXT.JS TO KNOW THE DYNATIC PATH TO ROUTE TO
   const paths = events.map((event) => ({ params: { eventId: event.id } }));
 
   return {
     paths: paths,
-    fallback: true,
+    fallback: "blocking",
   };
 }
 
